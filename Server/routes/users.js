@@ -5,7 +5,7 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const config = require("config");
-import { auth } from "../Utilities/utilities";
+const Utilities = require("../Utilities/utilities");
 
 // @route   POST /register
 // @desc    User registration
@@ -117,7 +117,7 @@ router.post(
 // @route   GET /
 // @desc    Get logged-in user details
 // @access  Private
-router.get("/", auth, async (req, res) => {
+router.get("/", Utilities.auth, async (req, res) => {
     try {
         const user = await User.findById(req.user.id).select("-password"); // Fetch user by ID from token
         if (!user) {
