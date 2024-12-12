@@ -61,4 +61,48 @@ router.get("/:id", auth, async (req, res) => {
         res.status(500).send("Server Error");
     }
 });
+
+// puting like to the post
+
+router.put("/like/:id", auth, async (req, res) => {
+    try {
+        const post = await Post.findById(req.params.id);
+
+        if (post.likes.some(like => like.user.toString() === req.user.id)) {
+            return res.status(400).json({ message: "Post already liked" });
+        }
+
+        post.likes.unshift({ user: req.user.id });
+
+        await post.save();
+
+        return res.json(post.likes);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send("Server Error");
+    }
+});
+
+// unlike the post
+
+router.put("/unlike/:id", auth, async (req, res) => {
+    try {
+        const post = await Post.findById(req.params.id);
+
+        if (!post.likes.some(like => like.user.toString() === req.user.id)) {
+            return res.status(400).json({ message: "Post not yet liked" });
+        }
+
+        post.likes = post.likes.filter(like => like.user.toString() !== req.user.id);
+
+        await post.save();
+
+        return res.json(post.likes);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send("Server Error");
+    }
+});
+
+
 module.exports = router;
