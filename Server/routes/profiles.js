@@ -100,4 +100,20 @@ router.delete('/', Utilities.auth, async (req, res) => {
 
 });
 
+router.post("upload", Utilities.auth, async (req, res) => {
+    //uploading the file
+    try {
+        Utilities.upload(req, res, async (err) => {
+            if (err) {
+                console.error("Error uploading file:", err.message);
+                return res.status(400).send("Error uploading file");
+            } else {
+                res.status(200).send(req.user.id);
+            }
+        })
+    } catch (e) {
+        console.error("Error uploading file:", e.message);
+        return res.status(500).send("Server error");
+    }
+})
 module.exports = router;
