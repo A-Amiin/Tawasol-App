@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Utilities = require("../Utilities/utilities");
 const Profile = require("../models/Profile");
+const User = require("../models/User");
 const { check, validationResult } = require("express-validator");
 const normalize = require("normalize-url");
 
@@ -80,6 +81,23 @@ router.get('/users/:user_id', Utilities.auth, async (req, res) => {
         console.error("Error fetching profile:", err.message);
         res.status(500).send("Server error");
     }
+});
+
+router.delete('/', Utilities.auth, async (req, res) => {
+    //removing the user and all about it
+    try {
+        await Promise.all([
+            //remove profile
+            Profile.findOneAndRemove({ user: req.user.id }),
+            //remove user
+            User.findOneAndRemove({ _id: req.user.id }),
+        ]);
+        res.json({ msg: "User information deleted successfully" });
+    } catch (err) {
+        console.error("Error deleting user:", err.message);
+        res.status(500).send("Server error");
+    }
+
 });
 
 module.exports = router;
