@@ -70,4 +70,16 @@ router.get('/', Utilities.auth, async (req, res) => {
     }
 });
 
+router.get('/users/:user_id', Utilities.auth, async (req, res) => {
+    try {
+        const profile = await Profile.findOne({ user: req.params.user_id }).populate('user', ['name']);
+        if (!profile) return res.status(400).json({ msg: "No profile found for this user" });
+        return res.json(profile);
+    } catch (err) {
+        if (err.kind === 'ObjectId') return res.status(404).json({ msg: "Profile not found" });
+        console.error("Error fetching profile:", err.message);
+        res.status(500).send("Server error");
+    }
+});
+
 module.exports = router;
