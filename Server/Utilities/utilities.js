@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const config = require("config");
-
+const multer = require("multer");
 // Middleware function for authentication
 const auth = (req, res, next) => {
     const token = req.header("x-authorization-token");
@@ -18,4 +18,14 @@ const auth = (req, res, next) => {
     }
 };
 
-module.exports = { auth };
+// Multer middleware for handling profile picture uploads
+const storage = multer.diskStorage({
+    destination: "public/images",
+    filename: (req, file, cb) => {
+        cb(null, `${Date.now()}-${req.user.id}`);
+    },
+});
+
+const upload = multer({ storage: storage }).single("");
+
+module.exports = { auth, upload };
