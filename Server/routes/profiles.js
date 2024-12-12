@@ -115,5 +115,44 @@ router.post("upload", Utilities.auth, async (req, res) => {
         console.error("Error uploading file:", e.message);
         return res.status(500).send("Server error");
     }
-})
+});
+
+router.put("/experience", Utilities.auth,
+    check("title", "Title is requaired").notEmpty(),
+    check("company", "Company is requaired").notEmpty(),
+    check("form", "Form is requaired, needs to be form the past").notEmpty().custom((value, { req }) => {
+        return request.body.to ? value < req.body.to : true;
+    }),
+    async (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+        try {
+            const profile = await Profile.findOne({ user: req.user.id });
+            profile.experience.unshift(req.body);
+            await profile.save();
+            return res.json(profile);
+        } catch (err) {
+            console.error("Error updating experience:", err.message);
+            res.status(500).send("Server error");
+        }
+    }
+);
+
+router.delete("/experience/:exp_id", Utilities.auth, async (req, res) => {
+    try {
+        const profile = await Profile.findOne({ user: req.user.id });
+        profile.experience = profile.experience.fiter(exp => {
+            return exp._id.toString() !== req.params.exp_id;
+        });
+        await profile.save();
+        res.json(profile);
+    } catch (err) {
+        console.error("Error deleting experience:", err.message);
+        res.status(500).send("Server error");
+    }
+});
+
+
 module.exports = router;
