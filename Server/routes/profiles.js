@@ -3,6 +3,7 @@ const router = express.Router();
 const Utilities = require("../Utilities/utilities");
 const Profile = require("../models/Profile");
 const User = require("../models/User");
+const Posts = require("../models/Post");
 const { check, validationResult } = require("express-validator");
 const normalize = require("normalize-url");
 
@@ -87,10 +88,9 @@ router.delete('/', Utilities.auth, async (req, res) => {
     //removing the user and all about it
     try {
         await Promise.all([
-            //remove profile
-            Profile.findOneAndRemove({ user: req.user.id }),
-            //remove user
-            User.findOneAndRemove({ _id: req.user.id }),
+            Posts.deleteMany({ user: req.user.id }),  // deleting all posts made by the user
+            User.findByIdAndDelete(req.user.id),
+            Profile.findOneAndDelete({ user: req.user.id })
         ]);
         res.json({ msg: "User information deleted successfully" });
     } catch (err) {
