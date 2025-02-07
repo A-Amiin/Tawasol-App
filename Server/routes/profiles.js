@@ -117,8 +117,6 @@ router.post("upload", Utilities.auth, async (req, res) => {
     }
 });
 
-// Experience Part
-
 router.put("/experience", Utilities.auth,
     check("title", "Title is requaired").notEmpty(),
     check("company", "Company is requaired").notEmpty(),
@@ -155,9 +153,6 @@ router.delete("/experience/:exp_id", Utilities.auth, async (req, res) => {
         res.status(500).send("Server error");
     }
 });
-
-
-// Education Part 
 
 router.put("/education", Utilities.auth,
     check("school", "School is requaired").notEmpty(),

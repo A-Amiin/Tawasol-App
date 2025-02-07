@@ -37,8 +37,6 @@ router.post(
     }
 );
 
-// GET All Posts '/posts'
-
 router.get("/", auth, async (req, res) => {
     try {
         const posts = await Post.find().sort({ date: -1 });
@@ -48,8 +46,6 @@ router.get("/", auth, async (req, res) => {
         res.status(500).send("Server Error");
     }
 });
-
-// GET Single Post '/posts/:id'
 
 router.get("/:id", auth, async (req, res) => {
     try {
@@ -64,8 +60,6 @@ router.get("/:id", auth, async (req, res) => {
         res.status(500).send("Server Error");
     }
 });
-
-// puting like to the post
 
 router.put("/like/:id", auth, async (req, res) => {
     try {
@@ -86,8 +80,6 @@ router.put("/like/:id", auth, async (req, res) => {
     }
 });
 
-// unlike the post
-
 router.put("/unlike/:id", auth, async (req, res) => {
     try {
         const post = await Post.findById(req.params.id);
@@ -106,8 +98,6 @@ router.put("/unlike/:id", auth, async (req, res) => {
         res.status(500).send("Server Error");
     }
 });
-
-// Create a new Api for the Comment object
 
 router.post(
     "/comment/:id",
@@ -154,8 +144,6 @@ router.post(
     }
 );
 
-// Delete a Comment
-
 router.delete("/comment/:id/:comment_id",
     auth,
     async (req, res) => {
@@ -184,8 +172,6 @@ router.delete("/comment/:id/:comment_id",
     }
 );
 
-// Delete a Post
-
 router.delete("/:id", auth, async (req, res) => {
     try {
         const post = await Post.findById(req.params.id);
@@ -204,6 +190,5 @@ router.delete("/:id", auth, async (req, res) => {
         return res.status(500).send("Server Error");
     }
 });
-
 
 module.exports = router;
