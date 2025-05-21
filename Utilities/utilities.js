@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
-const config = require("config");
 const multer = require("multer");
+
 // Middleware function for authentication
 const auth = (req, res, next) => {
     const token = req.header("x-authorization-token");
@@ -9,9 +9,9 @@ const auth = (req, res, next) => {
     }
 
     try {
-        const decoded = jwt.verify(token, config.get("jwtSecret")); // Verify the token
-        req.user = decoded.user; // Attach user data to request object
-        next(); // Proceed to the next middleware or route handler
+        const decoded = jwt.verify(token, process.env.JWT_SECRET); // ✅ تم التعديل هنا
+        req.user = decoded.user;
+        next();
     } catch (err) {
         console.error("Invalid token:", err.message);
         return res.status(401).json({ msg: "Token is not valid" });

@@ -4,7 +4,6 @@ const { check, validationResult } = require("express-validator");
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const config = require("config");
 const Utilities = require("../Utilities/utilities");
 
 let refreshTokens = [];
@@ -36,8 +35,8 @@ router.post(
             await user.save();
 
             const payload = { user: { id: user.id } };
-            const accessToken = jwt.sign(payload, config.get("jwtSecret"), { expiresIn: "15m" });
-            const refreshToken = jwt.sign(payload, config.get("jwtRefreshSecret"), { expiresIn: "30d" });
+            const accessToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "15m" });
+            const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, { expiresIn: "30d" });
             refreshTokens.push(refreshToken);
 
             res.json({ accessToken, refreshToken });
@@ -74,8 +73,8 @@ router.post(
             }
 
             const payload = { user: { id: user.id } };
-            const accessToken = jwt.sign(payload, config.get("jwtSecret"), { expiresIn: "15m" });
-            const refreshToken = jwt.sign(payload, config.get("jwtRefreshSecret"), { expiresIn: "30d" });
+            const accessToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "15m" });
+            const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, { expiresIn: "30d" });
             refreshTokens.push(refreshToken);
 
             res.json({ accessToken, refreshToken });
@@ -96,14 +95,14 @@ router.post("/refresh-token", (req, res) => {
         return res.status(403).json({ msg: "Invalid refresh token" });
     }
 
-    jwt.verify(token, config.get("jwtRefreshSecret"), (err, user) => {
+    jwt.verify(token, process.env.JWT_REFRESH_SECRET, (err, user) => {
         if (err) {
             return res.status(403).json({ msg: "Invalid refresh token" });
         }
 
         const accessToken = jwt.sign(
             { user: { id: user.user.id } },
-            config.get("jwtSecret"),
+            process.env.JWT_SECRET,
             { expiresIn: "15m" }
         );
         res.json({ accessToken });
